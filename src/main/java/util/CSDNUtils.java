@@ -7,15 +7,18 @@ import org.jsoup.select.Elements;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class CSDNUtils {
     //    发送http请求的工具类
     private RestTemplate restTemplate = new RestTemplate();
     private List<String> myAllArticleURL;
+    ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+
 
     /**
      * 只有调用了getAllArticleUrl才会有
@@ -54,7 +57,7 @@ public class CSDNUtils {
                 categoryURL.add(i, href);//存入数组中
             }
         }
-        System.out.println("总共有"+categoryURL.size()+"个专栏");
+        System.out.println("总共有" + categoryURL.size() + "个专栏");
         return categoryURL;
     }
 
@@ -89,19 +92,6 @@ public class CSDNUtils {
         return allArticle;
     }
 
-    /**
-     * 访问文章详情，模拟用户点击文章
-     *
-     * @param url
-     */
-    public void accessCSDNArticle(String url) {
-        ResponseEntity<String> forEntity = restTemplate.getForEntity(url, String.class);
-        if (forEntity.getStatusCode() == HttpStatus.OK) {
-            System.out.println(url + "访问成功");
-        } else {
-            System.out.println(url + "访问失败");
-        }
-    }
 
     /**
      * 返回所有文章url列表
@@ -128,9 +118,30 @@ public class CSDNUtils {
     }
 
     /**
+     * 访问文章详情，模拟用户点击文章
+     *
+     * @param url
+     */
+    public void accessCSDNArticle(String url) {
+        cachedThreadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                ResponseEntity<String> forEntity = restTemplate.getForEntity(url, String.class);
+                if (forEntity.getStatusCode() == HttpStatus.OK) {
+                    System.out.println(url + "访问成功");
+                } else {
+                    System.out.println(url + "访问失败");
+                }
+            }
+        });
+
+
+    }
+
+    /**
      * 前面一次性获取来所有博客链接，并保存了下来。这样就不需要再次发送获取所有文章的请求
      *
-     * @param url 传入博主自己的url主页，例如：https://blog.csdn.net/qq_41813208/
+     * @param url       传入博主自己的url主页，例如：https://blog.csdn.net/qq_41813208/
      * @param sleepTime 休眠时间，单位秒
      */
     public void autoRefresh(String url, long sleepTime) {
@@ -138,7 +149,12 @@ public class CSDNUtils {
         while (true) {
             for (int i = 0; i < myAllArticleURL.size(); i++) {
                 if (myAllArticleURL.get(i) != null) {
-                    accessCSDNArticle(myAllArticleURL.get(i));//访问文章
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(100);
+                        accessCSDNArticle(myAllArticleURL.get(i));//访问文章
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             try {
