@@ -15,7 +15,15 @@ import java.util.concurrent.TimeUnit;
 public class CSDNUtils {
     //    发送http请求的工具类
     private RestTemplate restTemplate = new RestTemplate();
+    private List<String> myAllArticleURL;
 
+    /**
+     * 只有调用了getAllArticleUrl才会有
+     * @return
+     */
+    public List<String> getMyAllArticleURL() {
+        return myAllArticleURL;
+    }
 
     /**
      * 获取博主所有的分类专栏访问地址
@@ -86,6 +94,7 @@ public class CSDNUtils {
 
     /**
      * 返回所有文章url列表
+     * 会存到myAllArticleURL的成员变量上
      * @param url
      * @return
      */
@@ -98,15 +107,21 @@ public class CSDNUtils {
             List<String> allArticle = getAllArticleBy_CategoryURL(allBlogCategoryURL.get(i));//获取分类下的所有文章
             allArticleUrl.addAll(allArticle);//将分类文章的所有url加入数组中
         }
+        this.myAllArticleURL=allArticleUrl;
         return allArticleUrl;
     }
 
+    /**
+     * 前面一次性获取来所有博客链接，并保存了下来。这样就不需要再次发送获取所有文章的请求
+     * @param url
+     * @param sleepTime
+     */
     public void autoRefresh(String url, long sleepTime) {
-        List<String> allArticleUrl = getAllArticleUrl(url);
+        getAllArticleUrl(url);//获取所有文章链接，文章链接会存在成员变量myAllArticleURL中
         while (true) {
-            for (int i = 0; i < allArticleUrl.size(); i++) {
-                if (allArticleUrl.get(i)!=null){
-                    accessCSDNArticle(allArticleUrl.get(i));//访问文章
+            for (int i = 0; i < myAllArticleURL.size(); i++) {
+                if (myAllArticleURL.get(i)!=null){
+                    accessCSDNArticle(myAllArticleURL.get(i));//访问文章
                 }
             }
             try {
