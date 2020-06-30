@@ -1,5 +1,5 @@
 # autoRefreshCSDN 利用爬虫程序自动访问所有文章的博客
-csdn博客访问量自动刷新程序，通过jsoup爬虫框架，获取对于的链接，spring的RestTemplete发送http请求
+100多行实现的csdn博客访问量自动刷新程序，原理很简单通过jsoup爬虫框架，获取对于的链接，spring的RestTemplete发送http请求
 
 
 
