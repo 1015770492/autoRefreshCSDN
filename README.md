@@ -24,6 +24,7 @@ csdn博客访问量自动刷新程序，通过jsoup爬虫框架，获取对于�
 ```
 # 使用的示例代码
 调用CSDNUtils中的autoRefresh(String url,long sleepTime)传入CSDN的主页地址，以及定时刷新的时间，时间设置的太短刷不了访问量
+博客越多提升的越快
 ```java
 import org.springframework.web.client.RestTemplate;
 import util.CSDNUtils;
@@ -39,4 +40,7 @@ public class AutoReFreshCSDNDemo {
 }
 
 ```
+实测有用！
+![https://blog.csdn.net/qq_41813208](https://blog.csdn.net/qq_41813208)
+几个小时增加8万多访问量，从6万涨到14万
 
