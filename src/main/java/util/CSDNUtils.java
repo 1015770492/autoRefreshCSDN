@@ -7,17 +7,22 @@ import org.jsoup.select.Elements;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CSDNUtils {
     //    发送http请求的工具类
     private RestTemplate restTemplate = new RestTemplate();
     private List<String> myAllArticleURL;
     ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+    private AtomicInteger day;
 
 
     /**
@@ -147,6 +152,14 @@ public class CSDNUtils {
     public void autoRefresh(String url, long sleepTime) {
         getAllArticleUrl(url);//获取所有文章链接，文章链接会存在成员变量myAllArticleURL中
         while (true) {
+            Date date=new Date();
+            //每天定时的更新所有文章内容
+            if (this.day.get() < date.getDay()){
+                this.day.set(date.getDay());
+                this.myAllArticleURL=null;//清空之前的文章
+                getAllArticleUrl(url);//重新获取所有文章链接到myAllArticleURL中
+            }
+
             for (int i = 0; i < myAllArticleURL.size(); i++) {
                 if (myAllArticleURL.get(i) != null) {
                     try {
@@ -158,6 +171,8 @@ public class CSDNUtils {
                 }
             }
             try {
+
+                System.out.println(date);
                 TimeUnit.SECONDS.sleep(sleepTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
