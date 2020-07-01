@@ -22,7 +22,7 @@ public class CSDNUtils {
     private RestTemplate restTemplate = new RestTemplate();
     private List<String> myAllArticleURL;
     ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
-    private AtomicInteger day;
+    private AtomicInteger day=new AtomicInteger(new Date().getDay());
 
 
     /**
