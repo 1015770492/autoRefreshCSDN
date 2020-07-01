@@ -33,7 +33,7 @@ public class AutoReFreshCSDNDemo {
     
     public static void main(String[] args) {
         CSDNUtils csdnUtils = new CSDNUtils();
-        csdnUtils.autoRefresh("https://blog.csdn.net/qq_41813208/",40);//csdn设置了时间大概1分钟
+        csdnUtils.autoRefresh("https://blog.csdn.net/qq_41813208/",50);//csdn设置了时间大概1分钟
     }
     
 }
@@ -42,4 +42,9 @@ public class AutoReFreshCSDNDemo {
 实测有用！
 ![https://blog.csdn.net/qq_41813208](https://blog.csdn.net/qq_41813208)
 几个小时增加8万多访问量，从6万涨到14万
+
+也可以打包成jar，将args[0] args[1]分别替代url和sleepTime，然后运行jar包时
+```bash
+java -jar jar包路径 "https://blog.csdn.net/qq_41813208/" 50
+```
 
