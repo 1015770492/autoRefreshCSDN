@@ -152,4 +152,5 @@ https://blog.csdn.net/qq_41813208/article/details/105480515访问成功
 ```bash
 java -jar jar包路径 "https://blog.csdn.net/qq_41813208/" 50
 ```
+https://human-resource-manage.oss-cn-shenzhen.aliyuncs.com/autoRefreshCSDN-1.0-SNAPSHOT-jar-with-dependencies.jar
 
