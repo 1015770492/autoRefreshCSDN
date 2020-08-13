@@ -26,8 +26,8 @@
 调用CSDNUtils中的autoRefresh(String url,long sleepTime)传入CSDN的主页地址，以及定时刷新的时间，时间设置的太短刷不了访问量
 博客越多提升的越快
 ```java
-import org.springframework.web.client.RestTemplate;
-import util.CSDNUtils;
+
+import util.accessArticle.CSDNUtils;
 
 public class AutoReFreshCSDNDemo {
     

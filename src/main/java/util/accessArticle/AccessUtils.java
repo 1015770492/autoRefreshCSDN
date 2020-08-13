@@ -1,4 +1,4 @@
-package util;
+package util.accessArticle;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -7,18 +7,20 @@ import org.jsoup.select.Elements;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class CSDNUtils {
+/**
+ * 刷访csdn问量工具类
+ */
+public class AccessUtils {
     //    发送http请求的工具类
     private RestTemplate restTemplate = new RestTemplate();
-    private Set<String> myAllCategoryURL = new CopyOnWriteArraySet<>();//去重
-    private Set<String> myAllArticleURL = new CopyOnWriteArraySet<>();//去重，并发访问
+    private CopyOnWriteArraySet<String> myAllCategoryURL = new CopyOnWriteArraySet<>();//去重
+    private CopyOnWriteArraySet<String> myAllArticleURL = new CopyOnWriteArraySet<>();//去重，并发访问
     ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(20);
     private AtomicLong count = new AtomicLong(0);
+
 
 
     /**
@@ -87,7 +89,7 @@ public class CSDNUtils {
      * @param url
      * @return
      */
-    public Set<String> getAllArticleUrl(String url) {
+    public CopyOnWriteArraySet<String> getAllArticleUrl(String url) {
         //1、获取所有专栏url，存入成员变量myAllCategoryURL
         addAllBlogCategoryURL_By_URL(url);
 
@@ -131,6 +133,9 @@ public class CSDNUtils {
         this.myAllArticleURL.clear();//清空之前的文章
         getAllArticleUrl(url);//重新获取所有文章链接到myAllArticleURL中
     }
+
+
+
 
     /**
      * 前面一次性获取来所有博客链接，并保存了下来。这样就不需要再次发送获取所有文章的请求
