@@ -45,7 +45,7 @@ public class DiggUtils {
      * @param articleUrl
      */
     public static void digg(String articleUrl) {
-        String[] split = articleUrl.split("article/details/");
+        String[] split = articleUrl.split("/article/details/");
         String acticleId = split[1];//获取文章id
         String diggText = getLikeByArticleURL(articleUrl);//获得文章articleUrl是点赞还是已赞
 
@@ -72,12 +72,12 @@ public class DiggUtils {
      * @return 返回 点赞/已赞
      */
     public static String getLikeByArticleURL(String url) {
-        Document doc = null;
-        try {
-            doc = Jsoup.connect(url).timeout(2000).get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        HttpEntity<String> httpEntity = DiggUtils.getHttpEntity(DiggUtils.getHeader());
+
+        ResponseEntity<String> forEntity = new RestTemplate().exchange(url, HttpMethod.GET,httpEntity, String.class);
+        Document doc = Jsoup.parse(forEntity.getBody());
+
         Element like = doc.getElementById("is-like-span");
         if (like == null) {
             System.out.println("文章为空");
@@ -124,7 +124,7 @@ public class DiggUtils {
      * @param headerMap
      * @return
      */
-    private static HttpEntity<String> getHttpEntity(HashMap<String, String> headerMap) {
+    public static HttpEntity<String> getHttpEntity(HashMap<String, String> headerMap) {
         Set<String> set = headerMap.keySet();
         set.forEach((key) -> {
             headers.add(key, headerMap.get(key));//添加请求头

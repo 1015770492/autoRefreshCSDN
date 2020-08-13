@@ -5,8 +5,15 @@ package test;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+import util.digg.DiggUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class AutoReFreshCSDNDemo {
 
@@ -18,24 +25,7 @@ public class AutoReFreshCSDNDemo {
 //        csdnUtils2.autoRefresh("https://blog.csdn.net/qq_41813208/", 65);//csdn设置了时间大概1分钟
 
 
-//        Document doc = Jsoup.connect("https://blog.csdn.net/qq_41813208/article/details/107933988").timeout(2000).get();
-//        System.out.println(doc.toString());
-//        System.out.println(doc.getElementById("is-like-span").text());
 
-
-        String url="https://blog.csdn.net/qq_41813208/article/details/104645567";
-        System.out.println(url);
-        Document doc = null;
-        try {
-            doc = Jsoup.connect(url).timeout(2000).get();
-            System.out.println(doc.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Element like = doc.getElementById("is-like-span");
-        System.out.println(like.toString());
-
-//        return like.text();
 
     }
 
