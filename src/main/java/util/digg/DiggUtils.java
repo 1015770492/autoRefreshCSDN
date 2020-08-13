@@ -5,12 +5,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.http.*;
+
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.springframework.web.client.RestTemplate;
 import util.accessArticle.AccessUtils;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.*;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -19,7 +25,9 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class DiggUtils {
     static HttpHeaders headers = new HttpHeaders();//创建请求头对象
-    static HttpEntity<String> entity;//带cookie的请求体
+//    static HttpEntity<String> entity;//带cookie的请求体
+    static HttpEntity<String> httpEntity = DiggUtils.getHttpEntity(DiggUtils.getHeader());
+    static ExecutorService executorService = Executors.newFixedThreadPool(5);
 
     private static CopyOnWriteArraySet set = new CopyOnWriteArraySet();
 
@@ -29,12 +37,12 @@ public class DiggUtils {
      * @param args
      */
     public static void main(String[] args) {
-        entity = getHttpEntity(getHeader());//设置带有cookie的请求体
         AccessUtils csdnUtils = new AccessUtils();//创建工具类，为了获取所有文章
         String blogerUrl = "https://blog.csdn.net/qq_41813208";//博主文章
+//        String blogerUrl = "https://blog.csdn.net/ywl470812087";//博主文章
         CopyOnWriteArraySet<String> allArticleUrl = csdnUtils.getAllArticleUrl(blogerUrl);//获取博主所有文章链接
         System.out.println(allArticleUrl);
-        allArticleUrl.stream().forEachOrdered((url) -> {
+        allArticleUrl.forEach((url) -> {
             digg(url);
         });
     }
@@ -49,16 +57,16 @@ public class DiggUtils {
         String acticleId = split[1];//获取文章id
         String diggText = getLikeByArticleURL(articleUrl);//获得文章articleUrl是点赞还是已赞
 
-        System.out.println("获得的信息{"+diggText+"}");
-
+        System.out.println("获得的信息{" + diggText + "}");
         if (diggText.strip().equals("点赞")) {//说明可以点赞
-            String url = new StringBuffer(split[0]).append("/phoenix/article/digg?ArticleId=").append(acticleId).toString();
+            String url = new StringBuilder(split[0]).append("/phoenix/article/digg?ArticleId=").append(acticleId).toString();
             System.out.println("点赞请求=======》" + url);
             JSONObject json = getResponseStringByRestTemplate(url);//进行点赞
             System.out.println("点赞完成：" + json.toJSONString());
         } else {
             System.out.println("文章已经点赞过");
         }
+
 
     }
 
@@ -73,18 +81,22 @@ public class DiggUtils {
      */
     public static String getLikeByArticleURL(String url) {
 
-        HttpEntity<String> httpEntity = DiggUtils.getHttpEntity(DiggUtils.getHeader());
-
-        ResponseEntity<String> forEntity = new RestTemplate().exchange(url, HttpMethod.GET,httpEntity, String.class);
-        Document doc = Jsoup.parse(forEntity.getBody());
+        ResponseEntity<String> forEntity = new RestTemplate().exchange(url, HttpMethod.GET, httpEntity, String.class);
+        Document doc = null;
+        if (forEntity.getStatusCode() == HttpStatus.OK) {
+            doc = Jsoup.parse(forEntity.getBody());
+        } else {
+            System.out.println("状态码" + forEntity.getStatusCode());
+            return "";
+        }
 
         Element like = doc.getElementById("is-like-span");
         if (like == null) {
             System.out.println("文章为空");
             return null;
         }
-
         return like.text();
+
     }
 
 
@@ -98,6 +110,7 @@ public class DiggUtils {
         HashMap<String, String> headers = new HashMap<>();
 
         headers.put("cookie", "从浏览器中复制自己的cookie值");
+
         headers.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36");
         return headers;
     }
@@ -109,7 +122,7 @@ public class DiggUtils {
      * @return
      */
     public static JSONObject getResponseStringByRestTemplate(String url) {
-        ResponseEntity<String> responseEntity = new RestTemplate().exchange(url, HttpMethod.GET, entity, String.class);//发送请求
+        ResponseEntity<String> responseEntity = new RestTemplate().exchange(url, HttpMethod.GET, httpEntity, String.class);//发送请求
         JSONObject result = null;
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
             result = JSONObject.parseObject(responseEntity.getBody());
