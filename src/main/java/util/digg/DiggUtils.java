@@ -44,7 +44,7 @@ public class DiggUtils {
      *
      * @param articleUrl
      */
-    public static synchronized void digg(String articleUrl) {
+    public static void digg(String articleUrl) {
         String[] split = articleUrl.split("article/details/");
         String acticleId = split[1];//获取文章id
         String diggText = getLikeByArticleURL(articleUrl);//获得文章articleUrl是点赞还是已赞
@@ -96,6 +96,7 @@ public class DiggUtils {
      */
     public static HashMap<String, String> getHeader() {
         HashMap<String, String> headers = new HashMap<>();
+
         headers.put("cookie", "从浏览器中复制自己的cookie值");
         headers.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36");
         return headers;
