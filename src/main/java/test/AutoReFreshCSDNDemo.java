@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class AutoReFreshCSDNDemo {
@@ -36,7 +37,6 @@ public class AutoReFreshCSDNDemo {
 //        stringStream.forEach((x) -> {
 //            cookieStr.set(cookieStr.get() + x);
 //        });
-
 
 
         ResponseEntity<String> cnvEntity = new RestTemplate().exchange("https://passport.csdn.net/v1/api/riskControl/checkNVC?nvcValue=%7B%22a%22%3A%22FFFF00000000016C467E%22%2C%22c%22%3A%221597336775326%3A0.4519652966517216%22%2C%22d%22%3A%22nvc_login%22%2C%22h%22%3A%7B%22key1%22%3A%22code0%22%2C%22nvcCode%22%3A400%2C%22umidToken%22%3A%22T2gA0oTI109434WC2q1RggMpJxcliSKF20IsNmavHsayXYblMQjobBFJAboGzFyFOflwS9Pqjq7qjnA7GuY8TgUH%22%7D%2C%22j%22%3A%7B%22test%22%3A1%7D%2C%22b%22%3A%22134%233AX03XXwXGirLIZ%2FUgCBoX0D3QROwKO9sE%2Fw4%2FPnTe5tw9yGueOLvyo31G5yyM64VKLkvraWxAubIqMkGoQeKeX6X%2BGYulmTw%2FPCnVkq0cUyrRb40%2FFt%2BTq6IgL7oJJqqH8iZzi%2BQWLFCqpAZtitzIxXqqK8oZG%2BXcp1qyCrI648p8fJZtXt%2BJWwqao5oXowqTVWMGCSyS6GJgIjhfabSknCjO%2FgMMqxKkPyIsJLV774oh1SE1S%2FpghghSrgoKM%2FOgz7ijdcy3Ntohrw%2FAGeTl7VQD0m9hLjdm4QHsVCWosHK8lKYHYu%2B0UqPfjgtPb9vXENnHSf3MpgP89UnFwmNKfRDb5rgVqF0yT8ia%2BfRzV45cSYvtNd5es8OT24%2BMturi73rgJbtbVWMXqrRGI%2FM88%2BKShQTD%2BNW0xh1JvQg7S4FRdN%2BIyn6U%2Bb8q7kz6Mo%2FvsPQXF70zjUx30LB%2BwacByhxxrfJA%2FM18rmIZ2IHElWzaER1IUSVr3ldz82kID%2FZuEKl6ZeR%2FF5dAozLdpE8w4Ma9lRJ0YLhHomlG8em1W9%2FdyUdrbZMLs3wkN7pzWVkk1fggy2C6yF%2BoF7wBmeHGOH7jVT14nDWzTwZWDeSw%2BTuMIjM%2FcptuRg08fIZR4KMVsD3iiTDOKJF7uOIjWj2CEMudoGv4j09CRR4NUzMSS8t8sxBWRfxHH7aHmdQXt%2Bff61BsMTJ5yd2661YWBkzUAejRNyjCOg5acpGUeluAsqRwznTMEx17kTGb12ljZZroqD41B27rtv0OFX2MkaFpYh3glzvv1d4PYmXhTJQkRAznOWhS84eu0ItAU7vx2TqYpkvN%2FjCLUc16C4M3kY9WeolTuF7JkZeLhmIoKFpdUBxBkkGu3ksyXz6iw8Cxfm4iHh5uDj5Jw8JWo68OUbe9TMRYYJUZVWa4CZG%2BVNkI0pOykeWJjQ3IFEDI9lbF94ZnqmapwdV1WneUxGSFtVVlph%2FLlrjD5VrHM2u1gxwjip922rrbWmaePEltj9Ok1CTrnzzEFcheA1qjYFuzigLxe%2BDNHhyrvI%2Fp9jV2ImuNzVNq2zLCcoru2z9PnqMNrg7AELbv5e9xyRt%2FQf%2F2EWbqoV95m9MXWWB5k708rwXu13kHjm5oRDlCRb3Iy0xWDcXHIKP8imTBim4OqsdWFK7vnhYlq9wxBMkaYxU4Kt4qk7%2FaToUgJHe7c2ROoRCdj2MFhSNzF8xLpjOxIvYdFvhmO%2BdpxsVGikUdNHqeaKMyi6NjBCA3X49Gc6ipOMtBYR170TZDZXXKEDZ5fFO0qJusNO%2BwqnHhmLs2S51hZ6DdTKd3JBq%2B3SmmYaeioWmMG5fRbNz3JcS9tTGMyvL%2FIazpe%2B1PAVOC8lBoxnC2Um8xxqJ9FM5mkRvIR71549%2FMCpJItU6OBdRxzkdnqLbCKqk9OL2aODw2A%2Bfj1KCnBOgqwPQ%2FBA7YXdOZWCLvD8AS54oF9cUtU6r%2FABV9bX25VYyLpeUuzUGGxQL5h5kumW195i%2FLF3G8kMiGB3a9cARV%2FrShi5xOZMFVlR9LwL%2FCVrYndOFp6va66Ek%2BF4qS6s%2BdnT9%2B93VQc4t%2FYVOBpGViXl7mG5U7vIfHX%2BOC3m9nASTpJRl2%2FE1JG3Z9MgXTs8omjbLKITOPg97xZJOub0NWunuJOQyxe5W%2FBA3uFt2wj%2BJHDNDyIhKJ2KKC%2BqYfoN7oJWf6Gx%2B%2Bx%2BWX8PWh8HmXtW%2FZytwIBqXZBR9HGbUWuyu%2B7RwwJLRR5a9z00RPohYA0Ulg6Dg8CyJk1jNgi8B3TUYuwVkhm4wuW23SbIGFudMb8iQ4sKRt4fY%2F7p7LoYp1ZRyZOhPpSNp5nZxM0DyIK67xbstE9sQG3XM88fXL9JqrAONNYhUuldcdtsdyCvmy%2FvgSoSqauYaSZBei8a0rMUcuPeY3iQC%2FAC80AF3cOFa97xNzn5jKCsboTcqe1dUwe1ElzplYDDt0ve6E6JiwWsL6i1aq2pOqWXDrPzh%2FzDLxtRD%2BSQhIgvsgKWrer%2BOHOqmIbblQ70PQDWLt0tOxMhORlGL6iw8zJHITWl8Flqr0AXa2GNmgMkK6HEVumQG8OFz8hT5abF3tuN6Bpe7DeF%2BmGT%2FX%3D%3D%22%2C%22e%22%3A%22E59TSDCgh4xti_mXGHNfIGVo9SDqvhQqzTLmgFihqgp9tuEUdiugeouLEJG0uvIa-9Z-k-lQ6fL3lpbcTxPN4fk9Wu-Q71ExCDYni5eDYwVSG_W5NXXiw0SnMK_GknTTTFhOiVDaaNOdAoCLDoRnww3KjFr3yugF92wGhTMN8b4Hcr_04k9jbrPa-eGRlbAkYizM9JlKkpiqJYbEB2zQGA%22%7D&callBackMethod=jsonp_0607518340006429&source=pc_password", HttpMethod.GET, null, String.class);
@@ -65,7 +65,7 @@ public class AutoReFreshCSDNDemo {
         loginHeaders.add("x-requested-with", "XMLHttpRequest");
         Instant instant = Instant.now();//获取时间戳
         String s = String.valueOf(instant.toEpochMilli());
-        loginHeaders.add("X-Tingyun-Id", "im-pGljNfnc;r="+s.substring(4, s.length()));
+        loginHeaders.add("X-Tingyun-Id", "im-pGljNfnc;r=" + s.substring(4, s.length()));
         System.out.println(loginHeaders);
         //2.设置请求体
         JSONObject jsonObject = new JSONObject();
@@ -87,8 +87,6 @@ public class AutoReFreshCSDNDemo {
         System.out.println(loginEntity.getHeaders());
         System.out.println("-------------------");
         System.out.println(loginEntity.getBody());
-
-
 
 
     }

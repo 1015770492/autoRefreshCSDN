@@ -5,31 +5,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.http.*;
-
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.springframework.web.client.RestTemplate;
 import util.accessArticle.AccessUtils;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.concurrent.*;
-
 import com.alibaba.fastjson.JSONObject;
+import util.request.RequestUtils;
+
 
 /**
  * 博客点赞工具类
  */
 public class DiggUtils {
-    static HttpHeaders headers = new HttpHeaders();//创建请求头对象
-//    static HttpEntity<String> entity;//带cookie的请求体
-    static HttpEntity<String> httpEntity = DiggUtils.getHttpEntity(DiggUtils.getHeader());
-    static ExecutorService executorService = Executors.newFixedThreadPool(5);
 
-    private static CopyOnWriteArraySet set = new CopyOnWriteArraySet();
 
     /**
      * 点赞的测试代码
@@ -81,7 +68,7 @@ public class DiggUtils {
      */
     public static String getLikeByArticleURL(String url) {
 
-        ResponseEntity<String> forEntity = new RestTemplate().exchange(url, HttpMethod.GET, httpEntity, String.class);
+        ResponseEntity<String> forEntity = new RestTemplate().exchange(url, HttpMethod.GET, RequestUtils.httpEntity, String.class);
         Document doc = null;
         if (forEntity.getStatusCode() == HttpStatus.OK) {
             doc = Jsoup.parse(forEntity.getBody());
@@ -101,28 +88,13 @@ public class DiggUtils {
 
 
     /**
-     * 构造的一个请求头
-     * 需要替换cookie
-     *
-     * @return
-     */
-    public static HashMap<String, String> getHeader() {
-        HashMap<String, String> headers = new HashMap<>();
-
-        headers.put("cookie", "从浏览器中复制自己的cookie值");
-
-        headers.put("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36");
-        return headers;
-    }
-
-    /**
      * 发送点赞请求，将返回的数据直接返回
      *
      * @param url 点赞的url
      * @return
      */
     public static JSONObject getResponseStringByRestTemplate(String url) {
-        ResponseEntity<String> responseEntity = new RestTemplate().exchange(url, HttpMethod.GET, httpEntity, String.class);//发送请求
+        ResponseEntity<String> responseEntity = new RestTemplate().exchange(url, HttpMethod.GET, RequestUtils.httpEntity, String.class);//发送请求
         JSONObject result = null;
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
             result = JSONObject.parseObject(responseEntity.getBody());
@@ -130,18 +102,5 @@ public class DiggUtils {
         return result;
     }
 
-    /**
-     * 设置请求头，包括cookie
-     * 返回一个请求体对象
-     *
-     * @param headerMap
-     * @return
-     */
-    public static HttpEntity<String> getHttpEntity(HashMap<String, String> headerMap) {
-        Set<String> set = headerMap.keySet();
-        set.forEach((key) -> {
-            headers.add(key, headerMap.get(key));//添加请求头
-        });
-        return new HttpEntity<String>("", headers);
-    }
+
 }
