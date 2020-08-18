@@ -29,7 +29,7 @@ public class DiggUtils {
 //        String blogerUrl = "https://blog.csdn.net/ywl470812087";//博主文章
         CopyOnWriteArraySet<String> allArticleUrl = csdnUtils.getAllArticleUrl(blogerUrl);//获取博主所有文章链接
         System.out.println(allArticleUrl);
-        allArticleUrl.forEach((url) -> {
+        allArticleUrl.stream().parallel().forEach((url) -> {
             digg(url);
         });
     }

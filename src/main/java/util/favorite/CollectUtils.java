@@ -24,24 +24,40 @@ public class CollectUtils {
 
 
     public static void main(String[] args) {
-
-
-        //举例一
-        Consumer consumer = (x) -> System.out.println(x);
-        Consumer consumer2 = System.out::println;
-
-        //举例二
-        BinaryOperator<Double> operator=(x,y)->Math.pow(x,y);
-        BinaryOperator<Double> operator2=Math::pow;
-
-        class Myclass{
-            Myclass(String x){
-                System.out.println("有参构造");
-            }
+        CopyOnWriteArraySet<String> myAllArticleURL = new CopyOnWriteArraySet<>();//去重，并发访问
+        for (int i = 0; i < 100000; i++) {
+            myAllArticleURL.add("" + i);
         }
 
-        Function<String,Myclass> fun1=(n)->new Myclass(n);
-        Function<String,Myclass> fun2=Myclass::new;
+        new Thread(() -> {
+            long begin = System.currentTimeMillis();
+
+            myAllArticleURL.stream().forEach((x) -> {});
+
+            long end = System.currentTimeMillis();
+
+            System.out.println(end - begin);
+
+        }).start();
+
+        System.out.println("===========");
+
+        new Thread(() -> {
+            System.out.println(myAllArticleURL.size());
+            long begin2 = System.currentTimeMillis();
+            myAllArticleURL.forEach((x) -> {});
+            long end2 = System.currentTimeMillis();
+
+            System.out.println(""+(end2 - begin2));
+        }).start();
+
+        //举例一
+//        Consumer consumer = (x) -> System.out.println(x);
+//        Consumer consumer2 = System.out::println;
+
+        //举例二
+//        BinaryOperator<Double> operator=(x,y)->Math.pow(x,y);
+//        BinaryOperator<Double> operator2=Math::pow;
 
 
 //        AccessUtils csdnUtils = new AccessUtils();//创建工具类，为了获取所有文章
@@ -61,7 +77,6 @@ public class CollectUtils {
 //                System.out.println(forEntity.getBody());
 //            }
 //        });
-
 
 
     }
