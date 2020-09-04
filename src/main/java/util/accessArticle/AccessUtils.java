@@ -21,8 +21,8 @@ public class AccessUtils {
     //    发送http请求的工具类
     private CopyOnWriteArraySet<String> myAllCategoryURL = new CopyOnWriteArraySet<>();//去重
     private CopyOnWriteArraySet<String> myAllArticleURL = new CopyOnWriteArraySet<>();//去重，并发访问
-    ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(10);
-    ExecutorService executorService = Executors.newFixedThreadPool(10);
+    static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
+    static ExecutorService executorService = Executors.newFixedThreadPool(2);
     private AtomicLong count = new AtomicLong(0);
 //    static Logger logger = Logger.getLogger(AccessUtils.class);
 

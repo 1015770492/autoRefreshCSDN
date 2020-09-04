@@ -26,7 +26,6 @@ public class DiggUtils {
     public static void main(String[] args) {
         AccessUtils csdnUtils = new AccessUtils();//创建工具类，为了获取所有文章
         String blogerUrl = "https://blog.csdn.net/qq_41813208";//博主文章
-//        String blogerUrl = "https://blog.csdn.net/ywl470812087";//博主文章
         CopyOnWriteArraySet<String> allArticleUrl = csdnUtils.getAllArticleUrl(blogerUrl);//获取博主所有文章链接
         System.out.println(allArticleUrl);
         allArticleUrl.stream().parallel().forEach((url) -> {

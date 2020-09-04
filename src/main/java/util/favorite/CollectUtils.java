@@ -24,59 +24,24 @@ public class CollectUtils {
 
 
     public static void main(String[] args) {
-        CopyOnWriteArraySet<String> myAllArticleURL = new CopyOnWriteArraySet<>();//去重，并发访问
-        for (int i = 0; i < 100000; i++) {
-            myAllArticleURL.add("" + i);
-        }
 
-        new Thread(() -> {
-            long begin = System.currentTimeMillis();
+        AccessUtils csdnUtils = new AccessUtils();//创建工具类，为了获取所有文章
+        String blogerUrl = "https://blog.csdn.net/qq_41813208";//博主文章
+//        String blogerUrl = "https://blog.csdn.net/ywl470812087";//博主文章
+        CopyOnWriteArraySet<String> allArticleUrl = csdnUtils.getAllArticleUrl(blogerUrl);//获取博主所有文章链接
+        allArticleUrl.forEach((articleUrl) -> {
+            JSONObject jsonObject = setFavoriteInfo(articleUrl, "");
+            System.out.println(jsonObject);
 
-            myAllArticleURL.stream().forEach((x) -> {});
-
-            long end = System.currentTimeMillis();
-
-            System.out.println(end - begin);
-
-        }).start();
-
-        System.out.println("===========");
-
-        new Thread(() -> {
-            System.out.println(myAllArticleURL.size());
-            long begin2 = System.currentTimeMillis();
-            myAllArticleURL.forEach((x) -> {});
-            long end2 = System.currentTimeMillis();
-
-            System.out.println(""+(end2 - begin2));
-        }).start();
-
-        //举例一
-//        Consumer consumer = (x) -> System.out.println(x);
-//        Consumer consumer2 = System.out::println;
-
-        //举例二
-//        BinaryOperator<Double> operator=(x,y)->Math.pow(x,y);
-//        BinaryOperator<Double> operator2=Math::pow;
-
-
-//        AccessUtils csdnUtils = new AccessUtils();//创建工具类，为了获取所有文章
-//        String blogerUrl = "https://blog.csdn.net/qq_41813208";//博主文章
-////        String blogerUrl = "https://blog.csdn.net/ywl470812087";//博主文章
-//        CopyOnWriteArraySet<String> allArticleUrl = csdnUtils.getAllArticleUrl(blogerUrl);//获取博主所有文章链接
-//        allArticleUrl.forEach((articleUrl) -> {
-//            JSONObject jsonObject = setFavoriteInfo(articleUrl, "");
-//            System.out.println(jsonObject);
-//
-//            HttpEntity<String> httpEntity = RequestUtils.getHttpEntity(jsonObject.toJSONString(), RequestUtils.getHeader());
-//            String url = "https://me.csdn.net/api/favorite/create";//收藏文章的api
+            HttpEntity<String> httpEntity = RequestUtils.getHttpEntity(jsonObject.toJSONString(), RequestUtils.getHeader());
+            String url = "https://me.csdn.net/api/favorite/create";//收藏文章的api
 //            System.out.println("===========");
-//            System.out.println(httpEntity);
-//            ResponseEntity<String> forEntity = new RestTemplate().exchange(url, HttpMethod.POST, httpEntity, String.class);
-//            if (forEntity.getStatusCode() == HttpStatus.OK) {
-//                System.out.println(forEntity.getBody());
-//            }
-//        });
+            System.out.println(httpEntity);
+            ResponseEntity<String> forEntity = new RestTemplate().exchange(url, HttpMethod.POST, httpEntity, String.class);
+            if (forEntity.getStatusCode() == HttpStatus.OK) {
+                System.out.println(forEntity.getBody());
+            }
+        });
 
 
     }

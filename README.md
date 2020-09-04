@@ -154,3 +154,39 @@ java -jar jar包路径 "https://blog.csdn.net/qq_41813208/" 50
 ```
 https://human-resource-manage.oss-cn-shenzhen.aliyuncs.com/autoRefreshCSDN-1.0-SNAPSHOT-jar-with-dependencies.jar
 
+
+### 增加点赞功能
+由于csdn的登录功能我暂时没有做，通过postman模仿请求头，发现能实现手机+短信验证码的方式登录，过段时间再做这个功能
+#### 第一步、添加用户的cookie
+点赞功能需要用户的cookie，因此将登录了csdn账号的用户cookie复制出来
+添加到`util.request.RequestUtils`中的  
+```java
+public static HashMap<String, String> getHeader() {
+    //输入用户的cookie
+    headers.put("cookie","传入cookie");
+
+```
+#### 第二步、调用写好的工具类`util.digg.DiggUtils`，将自己的个人博客主页替换成自己的
+
+需要注意的是同一个用户一天点赞的次数又上限一般是30左右、可能还根据csdn账号等级限制
+等级越高点赞的次数也越多，总之如果文章比较多，一天是无法完成所有文章的点赞行为，需要每天都运行程序。如果点赞过的文章则不会
+再次点赞，会再控制台打印获取数据`点赞`该文章已经点赞过
+没有点赞过的则会打印点赞后获得到的json数据
+
+替换`blogerUrl`为自己的地址
+```java
+    public static void main(String[] args) {
+        AccessUtils csdnUtils = new AccessUtils();//创建工具类，为了获取所有文章
+        String blogerUrl = "https://blog.csdn.net/qq_41813208";//博主文章
+        CopyOnWriteArraySet<String> allArticleUrl = csdnUtils.getAllArticleUrl(blogerUrl);//获取博主所有文章链接
+        System.out.println(allArticleUrl);
+        allArticleUrl.stream().parallel().forEach((url) -> {
+            digg(url);
+        });
+    }
+```
+
+
+
+
+
